@@ -5,7 +5,7 @@ from mysql.connector import Error
 class Database():
     def __init__(self,
                  host="localhost",
-                 port="3306",
+                 port="3300",
                  database="banks_portal",
                  user='root',
                  password='root'):
@@ -15,8 +15,6 @@ class Database():
         self.database   = database
         self.user       = user
         self.password   = password
-        self.connection = None
-        self.cursor     = None 
         self.connect()
     
 
@@ -64,23 +62,28 @@ class Database():
             return result.fetchone()[0]
    
 
-    def withdraw(self, accountID, amount):
+    def withdraw(self, p_accountID, p_amount):
         ''' Complete the method that calls store procedure
                     and return the results'''
         if self.connection.is_connected():
             self.cursor = self.connection.cursor()
-            params = (accountID, amount)
+            params = (p_accountID, p_amount)
             self.cursor.callproc('withdraw', params)
-            result = self.cursor.stored_results()
-            return result.fetchone()[0]
+            self.connection.commit()
+
+            result = list(self.cursor.stored_results())[0].fetchone()
+            if result is not None:
+                return result[0]
+            else:
+                return None
         
-    def addAccount(self, ownerName, owner_ssn, balance, status):
+    def addAccount(self, ownerName, owner_ssn, balance, account_status):
         ''' Complete the method to insert an
                     account to the accounts table'''
         if self.connection.is_connected():
             self.cursor = self.connection.cursor()
-            query = "INSERT INTO accounts(owner_name, owner_ssn, balance, status) VALUES (%s, %s, %s, %s)"
-            params = (ownerName, owner_ssn, balance, status)
+            query = "INSERT INTO accounts(ownerName, owner_ssn, balance, account_status) VALUES (%s, %s, %s, %s)"
+            params = (ownerName, owner_ssn, balance, account_status)
             self.cursor.execute(query, params)
             self.connection.commit()
   
