@@ -84,10 +84,45 @@ class PortalRequestHandler(BaseHTTPRequestHandler):
                     b"<div><a href='/withdraw'>Make Another Withdrawal?</a></div>")
                 self.wfile.write(b"</center></body></html>")
 
+            if self.path == '/deposit':
+                # Retrieve form data
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                form = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={'REQUEST_METHOD': 'POST'}
+                )
+
+                # Retrieve the necessary data from the form
+                accountID = form.getvalue("accountID")
+                amount = float(form.getvalue("amount"))
+
+                # Perform the deposit
+                result = self.database.deposit(accountID, amount)
+
+                # Display the result
+                self.wfile.write(
+                    b"<html><head><title> Bank's Portal </title></head>")
+                self.wfile.write(b"<body>")
+                self.wfile.write(b"<center><h1>Bank's Portal</h1>")
+                self.wfile.write(b"<hr>")
+                self.wfile.write(b"<div> <a href='/'>Home</a>| \
+                                 <a href='/addAccount'>Add Account</a>|\
+                                  <a href='/withdraw'>Withdraw</a>|\
+                                  <a href='/deposit'>Deposit </a>|\
+                                  <a href='/searchTransactions'>Search Transactions</a>|\
+                                  <a href='/deleteAccount'>Delete Account</a></div>")
+                self.wfile.write(b"<hr>")
+                self.wfile.write(b"<h3>The Deposit Made Successfully</h3>")
+                self.wfile.write(
+                    b"<div><a href='/Deposit'>Make Another Deposit?</a></div>")
+                self.wfile.write(b"</center></body></html>")
                 return    
 
         except IOError:
-            self.send_error(404, 'File Not Found: %s' % self.path)
+                    self.send_error(404, 'File Not Found: %s' % self.path)
 
         return
 
