@@ -50,17 +50,16 @@ class Database():
             self.cursor.execute(query)
             records = self.cursor.fetchall()
             return records
-       
-    def deposit(self, accountID, amount):
-        ''' Complete the method that calls store procedure
-                    and return the results'''
+    def deposit(self, accountId, amount):
+        '''Call the stored procedure to perform a deposit'''
         if self.connection.is_connected():
             self.cursor = self.connection.cursor()
-            params = (accountID, amount)
+            params = (accountId, amount, 0)  # Add the third parameter for p_balance
             self.cursor.callproc('deposit', params)
-            result = self.cursor.stored_results()
-            return result.fetchone()[0]
-   
+            self.connection.commit()  # Commit the transaction
+            p_balance = params[2]  # Retrieve the value of p_balance from the params tuple
+            return p_balance
+ 
 
     def withdraw(self, p_accountID, p_amount):
         ''' Complete the method that calls store procedure
