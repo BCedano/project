@@ -71,11 +71,16 @@ class Database():
             self.cursor.callproc('withdraw', params)
             self.connection.commit()
 
-            result = list(self.cursor.stored_results())[0].fetchone()
-            if result is not None:
-                return result[0]
+            result_sets = list(self.cursor.stored_results())
+            if len(result_sets) > 0:
+                result = result_sets[0].fetchone()
+                if result is not None:
+                    return result[0]
+                else:
+                    return None
             else:
                 return None
+
         
     def addAccount(self, ownerName, owner_ssn, balance, account_status):
         ''' Complete the method to insert an
