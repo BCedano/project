@@ -24,9 +24,9 @@ INSERT INTO Transactions (accountID, transactionType, transactionAmount)
 VALUES (1, 'deposit', 650.98),
        (3, 'withdraw', 899.87),
        (3, 'deposit', 350.00);
-
 Delimiter //
-CREATE PROCEDURE deposit (IN p_accountID INT, IN p_amount DECIMAL(10,2))
+DROP PROCEDURE IF EXISTS deposit //
+CREATE PROCEDURE deposit (IN p_accountID INT, IN p_amount DECIMAL(10,2), OUT p_balance DECIMAL(10,2))
 BEGIN
   START TRANSACTION;
 
@@ -37,7 +37,7 @@ BEGIN
   SET balance = balance + p_amount
   WHERE accountId = p_accountID;
 
-  SELECT balance
+  SELECT balance INTO p_balance
   FROM accounts
   WHERE accountId = p_accountID;
 
