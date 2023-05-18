@@ -5,7 +5,7 @@ from mysql.connector import Error
 class Database():
     def __init__(self,
                  host="localhost",
-                 port="3300",
+                 port="3306",
                  database="banks_portal",
                  user='root',
                  password='root'):
